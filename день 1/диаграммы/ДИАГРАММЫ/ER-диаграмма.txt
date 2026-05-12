@@ -1,0 +1,166 @@
+@startuml
+!define table(x) class x  (T,#FFAAAA) 
+!define pk(x) u# xu
+table(users) {
+  pk(id) INT
+  username VARCHAR
+  password_hash VARCHAR
+  full_name VARCHAR
+  role_id INT
+  is_active BOOLEAN
+  department_id INT
+}
+table(roles) {
+  pk(id) INT
+  name VARCHAR
+}
+table(departments) {
+  pk(id) INT
+  name VARCHAR
+}
+table(products) {
+  pk(id) INT
+  name VARCHAR
+  type VARCHAR
+  form VARCHAR
+  status VARCHAR
+}
+table(raw_materials) {
+  pk(id) INT
+  name VARCHAR
+  unit VARCHAR
+  category VARCHAR
+}
+table(recipes) {
+  pk(id) INT
+  product_id INT
+  version INT
+  status VARCHAR
+  created_at TIMESTAMP
+  approved_at TIMESTAMP
+  created_by INT
+}
+table(recipe_components) {
+  pk(id) INT
+  recipe_id INT
+  raw_material_id INT
+  percentage DECIMAL(5,2)
+  load_order INT
+  tolerance_min DECIMAL(5,2)
+  tolerance_max DECIMAL(5,2)
+}
+table(tech_maps) {
+  pk(id) INT
+  product_id INT
+  version INT
+  status VARCHAR
+  created_at TIMESTAMP
+  created_by INT
+}
+table(tech_map_steps) {
+  pk(id) INT
+  tech_map_id INT
+  step_order INT
+  step_name VARCHAR
+  step_type VARCHAR
+  planned_temp_c DECIMAL(5,1)
+  planned_pressure_bar DECIMAL(4,1)
+  planned_duration_min INT
+  is_mandatory BOOLEAN
+  instruction TEXT
+}
+table(production_orders) {
+  pk(id) INT
+  order_number VARCHAR
+  recipe_id INT
+  planned_quantity_kg DECIMAL(10,2)
+  status VARCHAR
+  planned_start_date DATE
+  created_by INT
+}
+table(batches) {
+  pk(id) INT
+  batch_number VARCHAR
+  order_id INT
+  recipe_id INT
+  tech_map_id INT
+  start_time TIMESTAMP
+  end_time TIMESTAMP
+  status VARCHAR
+  actual_quantity_kg DECIMAL(10,2)
+}
+table(batch_steps) {
+  pk(id) INT
+  batch_id INT
+  step_order INT
+  step_name VARCHAR
+  planned_temp_c DECIMAL(5,1)
+  actual_temp_c DECIMAL(5,1)
+  planned_duration_min INT
+  actual_duration_min INT
+  planned_pressure_bar DECIMAL(4,1)
+  actual_pressure_bar DECIMAL(4,1)
+  started_by INT
+  completed_by INT
+  started_at TIMESTAMP
+  completed_at TIMESTAMP
+  deviation_flag BOOLEAN
+  operator_comment TEXT
+}
+table(quality_controls) {
+  pk(id) INT
+  batch_id INT (nullable)
+  raw_material_batch_id INT (nullable)
+  analysis_date TIMESTAMP
+  sample_type VARCHAR
+  parameter_name VARCHAR
+  measured_value DECIMAL(8,2)
+  standard_value VARCHAR
+  unit VARCHAR
+  result VARCHAR
+  decision VARCHAR
+  analyst_id INT
+  analyst_comment TEXT
+}
+table(raw_material_batches) {
+  pk(id) INT
+  raw_material_id INT
+  batch_number VARCHAR
+  supplier VARCHAR
+  received_date DATE
+  quantity DECIMAL(10,2)
+  unit VARCHAR
+  status VARCHAR
+}
+table(audit_log) {
+  pk(id) INT
+  table_name VARCHAR
+  record_id INT
+  action VARCHAR
+  old_value JSONB
+  new_value JSONB
+  changed_by INT
+  changed_at TIMESTAMP
+}
+
+users --o{ departments  department_id
+users }o-- roles  role_id
+recipes }o-- products  product_id
+recipes }o-- users  created_by
+recipe_components }o-- recipes  recipe_id
+recipe_components }o-- raw_materials  raw_material_id
+tech_maps }o-- products  product_id
+tech_maps }o-- users  created_by
+tech_map_steps }o-- tech_maps  tech_map_id
+production_orders }o-- recipes  recipe_id
+production_orders }o-- users  created_by
+batches }o-- production_orders  order_id
+batches }o-- recipes  recipe_id
+batches }o-- tech_maps  tech_map_id
+batch_steps }o-- batches  batch_id
+batch_steps }o-- users  started_by
+batch_steps }o-- users  completed_by
+quality_controls }o-- batches  batch_id
+quality_controls }o-- raw_material_batches  raw_material_batch_id
+quality_controls }o-- users  analyst_id
+@enduml

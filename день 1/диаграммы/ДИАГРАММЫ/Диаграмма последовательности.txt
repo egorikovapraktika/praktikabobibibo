@@ -1,0 +1,50 @@
+@startuml
+actor Аппаратчик as User
+participant "Web-клиент" as Web
+participant "API" as API
+participant "База данных" as DB
+
+User -> Web: Вход в систему
+Web -> API: POST /auth/login
+API -> DB: проверка учётных данных
+API --> Web: токен доступа
+Web --> User: главный экран
+
+User -> Web: запрос активных партий
+Web -> API: GET /batches?status=running
+API -> DB: SELECT batches
+API --> Web: список партий
+Web --> User: отображение карточек
+
+User -> Web: выбор партии (нажатие)
+Web -> API: GET /batches/{id}/program
+API -> DB: SELECT партия, шаги, текущий шаг
+API --> Web: программа партии
+Web --> User: экран программы
+
+User -> Web: нажатие "Начать шаг"
+Web -> API: POST /batches/{id}/steps/{stepId}/start
+API -> DB: обновить статус шага, записать start_time
+API --> Web: подтверждение
+Web --> User: подсветка шага "Выполняется"
+
+User -> Web: ввод фактических параметров (температура)
+Web -> API: PUT /batches/{id}/steps/{stepId}
+API -> DB: проверка допустимых диапазонов
+alt параметры в норме
+    API --> Web: данные сохранены
+else отклонение
+    API -> DB: установить deviation_flag, записать комментарий
+    API --> Web: предупреждение о превышении
+end
+
+User -> Web: нажатие "Завершить шаг"
+Web -> API: POST /batches/{id}/steps/{stepId}/complete
+API -> DB: валидация обязательных полей, запись completed_at, переключение статуса
+alt все обязательные поля заполнены
+    API -> DB: активировать следующий шаг
+    API --> Web: успех, переход к следующему шагу
+else ошибка
+    API --> Web: сообщение о незаполненных полях
+end
+@enduml

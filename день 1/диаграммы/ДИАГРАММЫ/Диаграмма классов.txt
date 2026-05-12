@@ -1,0 +1,142 @@
+@startuml
+class User {
+  + id : int
+  + username : string
+  + password_hash : string
+  + full_name : string
+  + email : string
+  + phone : string
+  + is_active : bool
+  + last_login : datetime
+  + created_at : datetime
+}
+
+class Product {
+  + id : int
+  + name : string
+  + type : string
+  + form : string
+  + status : string
+}
+
+class RawMaterial {
+  + id : int
+  + name : string
+  + unit : string
+  + category : string
+}
+
+class Recipe {
+  + id : int
+  + version : int
+  + status : string
+  + created_at : datetime
+  + approved_at : datetime
+}
+
+class RecipeComponent {
+  + id : int
+  + percentage : decimal
+  + load_order : int
+  + tolerance_min : decimal
+  + tolerance_max : decimal
+}
+
+class TechMap {
+  + id : int
+  + version : int
+  + status : string
+  + created_at : datetime
+}
+
+class TechMapStep {
+  + id : int
+  + step_order : int
+  + step_name : string
+  + step_type : string
+  + planned_temp_c : decimal
+  + planned_pressure_bar : decimal
+  + planned_duration_min : int
+  + is_mandatory : bool
+  + instruction : text
+}
+
+class ProductionOrder {
+  + id : int
+  + order_number : string
+  + planned_quantity_kg : decimal
+  + status : string
+  + planned_start_date : date
+}
+
+class Batch {
+  + id : int
+  + batch_number : string
+  + start_time : datetime
+  + end_time : datetime
+  + status : string
+  + actual_quantity_kg : decimal
+}
+
+class BatchStep {
+  + id : int
+  + step_order : int
+  + step_name : string
+  + actual_temp_c : decimal
+  + actual_duration_min : int
+  + actual_pressure_bar : decimal
+  + deviation_flag : bool
+  + operator_comment : text
+  + started_at : datetime
+  + completed_at : datetime
+}
+
+class RawMaterialBatch {
+  + id : int
+  + batch_number : string
+  + supplier : string
+  + received_date : date
+  + quantity : decimal
+  + unit : string
+  + status : string
+}
+
+class QualityControl {
+  + id : int
+  + analysis_date : datetime
+  + sample_type : string
+  + parameter_name : string
+  + measured_value : decimal
+  + standard_value : string
+  + unit : string
+  + result : string
+  + decision : string
+  + analyst_comment : text
+}
+
+User "1" -- "0..*" Recipe : creates
+User "1" -- "0..*" TechMap : creates
+User "1" -- "0..*" ProductionOrder : creates
+User "1" -- "0..*" BatchStep : started_by
+User "1" -- "0..*" BatchStep : completed_by
+User "1" -- "0..*" QualityControl : analyst
+
+Product "1" -- "0..*" Recipe
+Product "1" -- "0..*" TechMap
+
+Recipe "1" -- "0..*" RecipeComponent
+RecipeComponent "0..*" -- "1" RawMaterial
+
+Recipe "1" -- "0..*" ProductionOrder
+TechMap "1" -- "0..*" TechMapStep
+
+ProductionOrder "1" -- "0..*" Batch
+Batch "1" -- "0..*" BatchStep
+Batch "0..1" -- "0..*" QualityControl
+
+RawMaterial "1" -- "0..*" RawMaterialBatch
+RawMaterialBatch "0..1" -- "0..*" QualityControl
+
+Batch "1" -- "0..1" Recipe
+Batch "1" -- "0..1" TechMap
+@enduml
