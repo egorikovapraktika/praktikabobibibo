@@ -1,0 +1,5 @@
+C:\Users\Kab19-08\source\repos\AllModules.Tests\obj\Debug\net5.0-windows\AllModules.Tests.csproj.AssemblyReference.cache
+C:\Users\Kab19-08\source\repos\AllModules.Tests\obj\Debug\net5.0-windows\AllModules.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kab19-08\source\repos\AllModules.Tests\obj\Debug\net5.0-windows\AllModules.Tests.AssemblyInfoInputs.cache
+C:\Users\Kab19-08\source\repos\AllModules.Tests\obj\Debug\net5.0-windows\AllModules.Tests.AssemblyInfo.cs
+C:\Users\Kab19-08\source\repos\AllModules.Tests\obj\Debug\net5.0-windows\AllModules.Tests.csproj.CoreCompileInputs.cache
